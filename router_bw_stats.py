@@ -12,7 +12,7 @@ class RouterFlow:
         self.pwd = 'password'
         self.host = '192.168.1.1'
         self.sleep_time = 1  # Seconds
-        self.bw_avg_window = 1
+        self.bw_avg_window = 1  # Compute avg of last n values
 
         self.setup_redis()
         self.setup_urlopener()
