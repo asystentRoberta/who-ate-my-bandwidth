@@ -170,7 +170,7 @@ class RouterFlow:
                         device_tag = self.device_names[k]
                     except KeyError:
                         self.refresh_names()
-                        device_tag = k
+                        device_tag = self.device_names[k]
 
                     self.redis.incrbyfloat(device_tag + "_upload", v['up_kbps'])
                     self.redis.incrbyfloat(device_tag + "_download", v['down_kbps'])
