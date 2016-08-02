@@ -140,10 +140,13 @@ class RouterFlow:
 
         return avg_rate
 
+    def refresh_names(self):
+        self.device_names = self.get_device_names()
+
     def run(self):
         prev_summary = None
 
-        all_devices = self.get_device_names()
+        self.refresh_names()
 
         while True:
             summary = self.refresh_summary()
@@ -164,8 +167,9 @@ class RouterFlow:
                 for k, v in self.get_avg_bw_rate().items():
                     # Update Redis
                     try:
-                        device_tag = all_devices[k]
+                        device_tag = self.device_names[k]
                     except KeyError:
+                        self.refresh_names()
                         device_tag = k
 
                     self.redis.incrbyfloat(device_tag + "_upload", v['up_kbps'])
