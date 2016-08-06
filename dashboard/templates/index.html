@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Total Bandwidth Usage - Nighthawk X4</title>
+</head>
+<body>
+
+    <table id='bandwidth_table' border="2">
+    </table>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <div id="container" style="min-width: 310px; max-width: 1400px; height: 800px; margin: 0 auto"></div>
+
+	<script type="text/javascript">
+        // BW chart
+        $(function () {
+            $('#container').highcharts({
+                chart: {
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Total Bandwidth Usage (in GBs)'
+                },
+                xAxis: {
+                    categories: [],
+                    title: {
+                        text: "Devices"
+                        },
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'GB',
+                        align: 'high'
+                    },
+                    labels: {
+                        overflow: 'justify'
+                            },
+                    stackLabels: {
+                        style: {
+                            color: 'white'       // Make the labels white
+                        },
+                        enabled: true,           // Enable stack labels
+                        x: -100,
+                        align: 'right'            // Align them to the left edge of the bar
+                    }
+                },
+                tooltip: {
+                    valueSuffix: ' GB'
+                },
+                plotOptions: {
+                    bar: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    },
+                    series: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: false
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    enabled: 'false',
+                    verticalAlign: 'top',
+                    x: -40,
+                    y: 100,
+                    floating: true,
+                    borderWidth: 1,
+                    backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+                    shadow: true
+                },
+                credits: {
+                    enabled: false
+                },
+                series: [{
+                    name: 'Upload',
+                    data: []
+                }, {
+                    name: 'Download',
+                    data: []
+                }]
+            });
+            $('#button').click(function () {
+            });
+        });
+
+	    // Create a new HTML5 EventSource
+	    var source = new EventSource('/events/');
+
+	    // Create a callback for when a new message is received.
+	    source.onmessage = function(e) {
+            $("#bandwidth_table").html("")
+            bandwidth_data = JSON.parse(e.data)
+
+            var chart = $('#container').highcharts();
+            /*
+            chart.series[0].setData([107, 1070]);
+            chart.series[1].setData([108, 2070]);
+            chart.xAxis[0].setCategories(["abc", "def"])
+            */
+
+            // Get sorted MACs list
+            var macs = [];
+            for(var k in bandwidth_data) macs.push(k);
+            macs.sort();
+
+            // Set chart values
+            var uploads = [];
+            var downloads = [];
+            for(var i in macs) {
+                uploads.push(parseFloat((bandwidth_data[macs[i]]['upload']/1024/1024).toFixed(6)));
+                downloads.push(parseFloat((bandwidth_data[macs[i]]['download']/1024/1024).toFixed(6)));
+            }
+            chart.xAxis[0].setCategories(macs);
+            chart.series[0].setData(uploads);
+            chart.series[1].setData(downloads);
+	    };
+
+	</script>
+</body>
+</html>

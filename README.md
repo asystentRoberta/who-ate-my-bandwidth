@@ -4,6 +4,10 @@ This script uses the router "undocumented" API to read flow data and update Redi
 
 It's a work in progress.
 
+# Dashboard Screenshot
+
+![alt tag](https://raw.githubusercontent.com/shadyabhi/netgear_bw_monitor/dashboard/screenshot.jpg)
+
 # Devices Tested
 
 * Netgear Nighthawk X4 R7500
