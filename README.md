@@ -6,7 +6,7 @@ It's a work in progress.
 
 # Dashboard Screenshot
 
-![alt tag](https://raw.githubusercontent.com/shadyabhi/netgear_bw_monitor/dashboard/screenshot.jpg)
+![alt tag](https://raw.githubusercontent.com/shadyabhi/netgear_bw_monitor/master/dashboard/screenshot.jpg)
 
 # Devices Tested
 
