@@ -112,8 +112,11 @@ class RouterFlow:
                                 old[mac]['up_bytes']) / 1024.0 / self.sleep_time
                 diff_down_kbps = (new[mac]['down_bytes'] -
                                   old[mac]['down_bytes']) / 1024.0 / self.sleep_time
-                rate[mac] = dict(up_kbps=diff_up_kbps,
-                                 down_kbps=diff_down_kbps)
+                # When devices go away, diff becomes negative
+                # Ignore that
+                if diff_up_kbps >= 0 and diff_down_kbps >= 0:
+                    rate[mac] = dict(up_kbps=diff_up_kbps,
+                                     down_kbps=diff_down_kbps)
             except KeyError:
                 # Some device dissapreared. Fine
                 pass
