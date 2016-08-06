@@ -1,6 +1,6 @@
 # Who-Ate-My-Bandwidth (Netgear Bandwidth Monitor)
 
-This script uses the router "undocumented" API to read flow data and update Redis for all devices connected to network.
+This tool uses the router "undocumented" API to read flow data and update Redis for all devices connected to network. Later, this data is used to serve a fancy realtime dashboard. 
 
 ## Features
 
