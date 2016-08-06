@@ -4,6 +4,7 @@ import re
 import urllib2
 import redis
 import sys
+import threading
 
 
 class RouterFlow:
@@ -144,7 +145,10 @@ class RouterFlow:
         return avg_rate
 
     def refresh_names(self):
+        threading.Timer(60, self.refresh_names).start()
         self.device_names = self.get_device_names()
+        for mac, name in self.device_names.items():
+            self.redis.set(mac, name)
 
     def run(self):
         prev_summary = None
@@ -167,18 +171,12 @@ class RouterFlow:
                     self.past_rates.pop()
 
                 # Print average stats
-                for k, v in self.get_avg_bw_rate().items():
+                for mac, rate in self.get_avg_bw_rate().items():
                     # Update Redis
-                    try:
-                        device_tag = self.device_names[k]
-                    except KeyError:
-                        self.refresh_names()
-                        device_tag = self.device_names[k]
+                    self.redis.incrbyfloat(mac + "_upload", rate['up_kbps'])
+                    self.redis.incrbyfloat(mac + "_download", rate['down_kbps'])
 
-                    self.redis.incrbyfloat(device_tag + "_upload", v['up_kbps'])
-                    self.redis.incrbyfloat(device_tag + "_download", v['down_kbps'])
-
-                    print device_tag, v
+                    print mac, rate
 
                 print
 
