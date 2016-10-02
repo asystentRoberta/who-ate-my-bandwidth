@@ -3,7 +3,7 @@ import json
 import re
 import urllib2
 import redis
-import sys
+import datetime
 import threading
 
 
@@ -28,17 +28,24 @@ class RouterFlow:
         self.opener = urllib2.build_opener(authhandler)
 
     def setup_redis(self):
-        self.redis = redis.Redis()
-        if self.redis.ping() is False:
-            print "Error, Redis not running"
-            sys.exit(1)
+        while True:
+            try:
+                self.redis = redis.Redis()
+                if self.redis.ping() is True:
+                    return
+                else:
+                    continue
+            except:
+                print "Error, Redis not running. Retrying after sleeping for 1 second"
+                time.sleep(1)
+                continue
 
     def get_device_names(self):
         all_devices = dict()
         while True:
             try:
                 resp = self.opener.open('http://192.168.1.1/QOS_device_info.htm'
-                                        '?ts=%d'.format(int(time.time() * 1000)))
+                                        '?ts=%d'.format(int(time.time() * 1000)), timeout=10)
                 if resp.getcode() != 200:
                     raise Exception("Non-200 response")
             except Exception as e:
@@ -55,7 +62,7 @@ class RouterFlow:
     def _call(self, url):
         while True:
             try:
-                resp = self.opener.open(url)
+                resp = self.opener.open(url, timeout=10)
                 if resp.getcode() != 200:
                     raise Exception("Non-200 response")
                 resp_json = json.loads(resp.read())
@@ -148,7 +155,7 @@ class RouterFlow:
         threading.Timer(60, self.refresh_names).start()
         self.device_names = self.get_device_names()
         for mac, name in self.device_names.items():
-            self.redis.set(mac, name)
+            self.redis.set("device_name_" + mac, name)
 
     def run(self):
         prev_summary = None
@@ -175,6 +182,14 @@ class RouterFlow:
                     # Update Redis
                     self.redis.incrbyfloat(mac + "_upload", rate['up_kbps'])
                     self.redis.incrbyfloat(mac + "_download", rate['down_kbps'])
+
+                    # Update per-month metrics too
+                    self.redis.incrbyfloat(mac + "_upload" + "_{}".format(datetime.date.today().strftime("%Y-%m")), rate['up_kbps'])
+                    self.redis.incrbyfloat(mac + "_download" + "_{}".format(datetime.date.today().strftime("%Y-%m")), rate['down_kbps'])
+
+                    # Update per-day metrics too
+                    self.redis.incrbyfloat(mac + "_upload" + "_{}".format(datetime.date.today()), rate['up_kbps'])
+                    self.redis.incrbyfloat(mac + "_download" + "_{}".format(datetime.date.today()), rate['down_kbps'])
 
                     print mac, rate
 
