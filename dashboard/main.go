@@ -18,7 +18,7 @@ import (
 func main() {
 
 	// Connect to Redis
-	redisConn, err := redis.Dial("tcp", "192.168.1.16:6379")
+	redisConn, err := redis.Dial("tcp", "192.168.1.2:6379")
 	// redisConn, err := redis.Dial("tcp", ":6379")
 	if err != nil {
 		log.Panicf("Error connecting to Redis: %s", err)

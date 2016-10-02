@@ -16,15 +16,15 @@ type bandwidth struct {
 
 func getBWData(c redis.Conn) (string, error) {
 
-	keys, _ := redis.Values(c.Do("KEYS", "*_download"))
+	keys, _ := redis.Values(c.Do("KEYS", fmt.Sprintf("*download_%s", time.Now().Format("2006-01"))))
 	allBWData := make(map[string]bandwidth)
 
 	for _, key := range keys {
 		mac := strings.Split(fmt.Sprintf("%s", key), "_")[0]
 		deviceName, _ := redis.String(c.Do("GET", mac))
 
-		download, _ := redis.Float64(c.Do("GET", mac+"_download"))
-		upload, _ := redis.Float64(c.Do("GET", mac+"_upload"))
+		download, _ := redis.Float64(c.Do("GET", fmt.Sprintf("%s_download_%s", mac, time.Now().Format("2006-01"))))
+		upload, _ := redis.Float64(c.Do("GET", fmt.Sprintf("%s_upload_%s", mac, time.Now().Format("2006-01"))))
 
 		allBWData[fmt.Sprintf("%s - %s", deviceName, mac)] = bandwidth{Upload: upload, Download: download}
 	}
