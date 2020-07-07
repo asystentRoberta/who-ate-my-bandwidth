@@ -5,18 +5,20 @@ import urllib2
 import redis
 import datetime
 import threading
+import os
 
 
 class RouterFlow:
     def __init__(self):
         self.user = 'admin'
-        self.pwd = 'password'
+        self.pwd = os.environ.get('router_password')
         self.host = '192.168.1.1'
         self.sleep_time = 1  # Seconds
         self.bw_avg_window = 1  # Compute avg of last n values
 
         self.setup_redis()
         self.setup_urlopener()
+	print self.pwd
 
         # Keep track of past bandwidth rate data
         self.past_rates = []
