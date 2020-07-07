@@ -1,0 +1,5 @@
+https://github.com/dan82840/netgear-r7800/tree/c761527edc044aa1f1847b37b05baa48b650f802/package/dumpevents/files
+https://github.com/rbeede/ZyXEL_EMG2926-Q10A/blob/cc892e565b81ca19574fff807622ed3ca7d0220e/TT-7C0/Release_AAVK/EMG2926AAVK-luci-0.9%2Bsvn6252/modules/admin-easy/luasrc/view/streamboost_node.htm
+https://github.com/jollaman999/openwrt-zyxel-nbg6817/tree/82cb51b4c66abd331c08adfcbe951b2a926e0ea5/package/zyxel-streamboost/files/usr/lib/lua/luci/view/expert_configuration
+
+
